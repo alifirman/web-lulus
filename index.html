@@ -20,10 +20,10 @@
             <h1 class="display-5 fw-bold text-body-emphasis">Pengumuman Hasil Kelulusan</h1>
             
             <div class="col-lg-6 mx-auto">
-                <p class="lead mb-4">Sesuai dengan Permendikbud No.123/SKL/XII/2025 tentang Penetapan Kelulusan Siswa SMK, maka dengan ini kami mengumumkan bagi para siswa-siswi SMK PGRI 1 Pasuruan untuk bisa melihat hasil pengumuman kelulusan dibawah ini.</p>
+                <p class="mb-4">Sesuai dengan Permendikbud No.123/SKL/XII/2025 tentang Penetapan Kelulusan Siswa SMK, maka dengan ini kami mengumumkan bagi para siswa-siswi SMK PGRI 1 Pasuruan untuk bisa melihat hasil pengumuman kelulusan dibawah ini.</p>
                 
                 <div id="search-container" class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-                    <input type="text" id="search-input" placeholder="Masukkan NISN">
+                    <input type="text" id="search-input" placeholder="Masukkan PIN Anda">
                     <button type="button" id="search-button" class="btn btn-primary px-4 gap-3">Cari</button>
                 </div>
 
@@ -67,12 +67,13 @@
                             siswaDiv.classList.add('siswa-info');
                             siswaDiv.innerHTML = `
                                 <strong>Nama:</strong> ${siswa['Nama Siswa']}<br>
+                                <strong>Kelas:</strong> ${siswa['Kelas']}<br>
                                 <strong>NISN:</strong> ${siswa['NISN']}<br>
                                 <strong>Status:</strong> <span class="${siswa['Status Kelulusan'].toLowerCase().replace(' ', '-')}">${siswa['Status Kelulusan']}</span>
                             `;
                             resultContainer.appendChild(siswaDiv);
                         } else {
-                            resultContainer.innerHTML = '<p>Data siswa dengan NISN tersebut tidak ditemukan.</p>';
+                            resultContainer.innerHTML = '<p>Data Siswa dengan PIN tersebut tidak ditemukan.</p>';
                         }
                     })
                     .catch(error => {
@@ -80,7 +81,7 @@
                         console.error('Error fetching data:', error);
                     });
             } else {
-                resultContainer.innerHTML = '<p>Silakan masukkan NISN.</p>';
+                resultContainer.innerHTML = '<p>Silakan masukkan PIN Anda.</p>';
             }
         });
     </script>
