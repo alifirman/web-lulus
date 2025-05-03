@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pengumuman Kelulusan</title>
+    <!-- style -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+    <main>
+        <div class="px-4 py-5 my-5 text-center">
+            <img class="d-block mx-auto mb-4" src="./assets/img/smkjawara.png" alt="" width="140">
+            
+            <h1 class="display-5 fw-bold text-body-emphasis">Pengumuman Hasil Kelulusan</h1>
+            
+            <div class="col-lg-6 mx-auto">
+                <p class="lead mb-4">Sesuai dengan Permendikbud No.123/SKL/XII/2025 tentang Penetapan Kelulusan Siswa SMK, maka dengan ini kami mengumumkan bagi para siswa-siswi SMK PGRI 1 Pasuruan untuk bisa melihat hasil pengumuman kelulusan dibawah ini.</p>
+                
+                <div id="search-container" class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                    <input type="text" id="search-input" placeholder="Masukkan NISN">
+                    <button type="button" id="search-button" class="btn btn-primary px-4 gap-3">Cari</button>
+                </div>
+
+                <div id="result-container">
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- <div class="container">
+        <h1>Pengumuman Hasil Kelulusan</h1>
+    
+        <div id="search-container">
+            <input type="text" id="search-input" placeholder="Masukkan NISN">
+            <button id="search-button">Cari</button>
+        </div>
+    
+        <div id="result-container">
+        </div>
+    </div> -->
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq" crossorigin="anonymous"></script>
+
+
+    <script>
+        const apiUrl = 'https://script.google.com/macros/s/AKfycbxU_HBszaQuKOybvn4I7V1qQkg7taXiUdE4tz1ZBh_00yb8wOKeo6aQAoABnAZUiLwWng/exec'; // Ganti dengan URL aplikasi web Anda
+        const searchInput = document.getElementById('search-input');
+        const searchButton = document.getElementById('search-button');
+        const resultContainer = document.getElementById('result-container');
+
+        searchButton.addEventListener('click', () => {
+            const nisn = searchInput.value.trim();
+            if (nisn) {
+                fetch(`${apiUrl}?nisn=${nisn}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        resultContainer.innerHTML = ''; // Kosongkan hasil sebelumnya
+                        if (data && data.length > 0) {
+                            const siswa = data[0]; // Karena NISN diasumsikan unik
+                            const siswaDiv = document.createElement('div');
+                            siswaDiv.classList.add('siswa-info');
+                            siswaDiv.innerHTML = `
+                                <strong>Nama:</strong> ${siswa['Nama Siswa']}<br>
+                                <strong>NISN:</strong> ${siswa['NISN']}<br>
+                                <strong>Status:</strong> <span class="${siswa['Status Kelulusan'].toLowerCase().replace(' ', '-')}">${siswa['Status Kelulusan']}</span>
+                            `;
+                            resultContainer.appendChild(siswaDiv);
+                        } else {
+                            resultContainer.innerHTML = '<p>Data siswa dengan NISN tersebut tidak ditemukan.</p>';
+                        }
+                    })
+                    .catch(error => {
+                        resultContainer.innerHTML = '<p>Terjadi kesalahan saat mencari data.</p>';
+                        console.error('Error fetching data:', error);
+                    });
+            } else {
+                resultContainer.innerHTML = '<p>Silakan masukkan NISN.</p>';
+            }
+        });
+    </script>
+</body>
+
+</html>
