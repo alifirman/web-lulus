@@ -4,7 +4,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="assets/img/smkjawara.png" type="image/png">
     <title>SMK Jawara | Pengumuman Kelulusan</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/bulma.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
@@ -13,6 +12,9 @@
         #result-container.error {
             color: red !important;
             font-weight: bold;
+        }
+        #download-button-container {
+            margin-top: 1rem;
         }
     </style>
 </head>
@@ -24,7 +26,7 @@
             <div class="container">
                 <div class="columns is-centered has-text-centered">
                     <div class="column is-three-quarters">
-                        <img src="./assets/img/smkjawara.png" alt="" width="120">
+                        <img src="./assets/img/smkjawara.png" alt="logo_smk" width="120">
 
                         <h1 class="is-size-2 has-text-weight-bold">Pengumuman Kelulusan</h1>
 
@@ -54,6 +56,14 @@
                             <div class="columns">
                                 <div class="column is-4-desktop">
                                     <div id="result-container" class="has-text-centered"></div>
+                                    <div id="download-button-container" class="has-text-centered is-hidden">
+                                        <a id="download-button" class="button is-success">
+                                            <span class="icon is-small">
+                                                <i class="fas fa-download"></i>
+                                            </span>
+                                            <span>Download Pengumuman</span>
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -69,12 +79,16 @@
         const pinInput = document.getElementById('pin-input');
         const searchButton = document.getElementById('search-button');
         const resultContainer = document.getElementById('result-container');
+        const downloadButtonContainer = document.getElementById('download-button-container');
+        const downloadButton = document.getElementById('download-button');
 
         searchButton.addEventListener('click', () => {
             const nisn = nisnInput.value.trim();
             const pin = pinInput.value.trim();
 
-            resultContainer.innerHTML = '<p style="color: white;">Mencari data...</p>'; // Tampilkan pesan loading
+            resultContainer.innerHTML = '<p style="color: white;">Mencari data...</p>';
+            resultContainer.classList.remove('error');
+            downloadButtonContainer.classList.add('is-hidden'); // Sembunyikan tombol download saat pencarian baru
 
             if (nisn && pin) {
                 fetch(`${apiUrl}?nisn=${nisn}&pin=${pin}`)
@@ -87,33 +101,45 @@
                     .then(data => {
                         resultContainer.innerHTML = '';
                         resultContainer.classList.remove('error');
-                        if (data && data.length > 0) {
-                            const siswa = data[0];
+                        if (data && data.error) {
+                            resultContainer.classList.add('error');
+                            resultContainer.innerHTML = `<p>${data.error}</p>`;
+                            // downloadButtonContainer.classList.add('is-hidden');
+                        } else if (data && data['Nama Siswa']) {
                             const siswaDiv = document.createElement('div');
                             siswaDiv.classList.add('siswa-info');
                             siswaDiv.innerHTML = `
-                                <b>Nama:</b> ${siswa['Nama Siswa']}<br>
-                                <b>Kelas:</b> ${siswa['Kelas']}<br>
-                                <b>NISN:</b> ${siswa['NISN']}<br>
-                                <span style="background-color: yellow; padding: 2px 2px;"><b>Status:</b> <span class="${siswa['Status Kelulusan'].toLowerCase().replace(' ', '-')}">${siswa['Status Kelulusan']}</span></span>
+                                <b>Nama:</b> ${data['Nama Siswa']}<br>
+                                <b>Kelas:</b> ${data['Kelas']}<br>
+                                <b>NISN:</b> ${data['NISN']}<br>
+                                <span style="background-color: yellow; padding: 2px 2px;"><b>Status:</b> <span class="${data['Status Kelulusan'].toLowerCase().replace(' ', '-')}">${data['Status Kelulusan']}</span></span>
                             `;
                             resultContainer.appendChild(siswaDiv);
-                        } else if (data && data.error) {
-                            resultContainer.classList.add('error');
-                            resultContainer.innerHTML = `<p>${data.error}</p>`;
+
+                            // Tampilkan tombol download jika URL tersedia
+                            if (data.downloadUrl) {
+                                downloadButton.href = data.downloadUrl;
+                                downloadButtonContainer.classList.remove('is-hidden');
+                            } else {
+                                downloadButtonContainer.classList.add('is-hidden');
+                                console.error('URL download tidak diterima dari server.');
+                            }
                         } else {
                             resultContainer.classList.add('error');
                             resultContainer.innerHTML = '<p>Data siswa dengan NISN dan PIN tersebut tidak ditemukan.</p>';
+                            downloadButtonContainer.classList.add('is-hidden');
                         }
                     })
                     .catch(error => {
                         resultContainer.classList.add('error');
                         resultContainer.innerHTML = `<p>Terjadi kesalahan saat mencari data: ${error.message}</p>`;
                         console.error('Error fetching data:', error);
+                        downloadButtonContainer.classList.add('is-hidden');
                     });
             } else {
                 resultContainer.classList.add('error');
                 resultContainer.innerHTML = '<p>Silakan masukkan NISN dan PIN Anda.</p>';
+                downloadButtonContainer.classList.add('is-hidden');
             }
         });
     </script>
